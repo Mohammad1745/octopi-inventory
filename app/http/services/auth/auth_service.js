@@ -1,4 +1,8 @@
 const Service = require('../service')
+const User = require('../../../../app/models/user')
+const {makeHash} = require("../../../helper/helper");
+const {SESSION_TIMEOUT} = require("../../../helper/core_constants");
+const jwt = require('jsonwebtoken')
 
 class AuthService extends Service {
 
@@ -16,7 +20,16 @@ class AuthService extends Service {
      */
     login = async (request, response) => {
         try {
-            return this.response().success('hii')
+            const {email, password} = request.body
+            const user = await User.findOne({email})
+            if (!user){
+                return this.response().error('Email User Doesn\'t Exists. Please Register An Account.')
+            }
+            if (user.password !== makeHash(email,password)){
+                return this.response().error('Wrong email or password.')
+            }
+            const data = this.#_authorizeUser(user, request, response)
+            return this.response(data).success('User Logged In Successfully')
         } catch (e) {
             return this.response().error(e.message)
         }
