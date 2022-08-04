@@ -7,6 +7,7 @@ const productController = require('../../app/http/controllers/api/user/product_c
 
 //middleware
 route.use(authApi)
+route.get('/product', productController.index)
 route.post('/product', ...saveProductRequest.validate, productController.store)
 
 module.exports = route

@@ -16,6 +16,20 @@ class ProductService extends Service {
      * @param response
      * @return {Object}
      */
+    productList = async (request, response) => {
+        try {
+            let products = await Product.find({user_id: request.user.id})
+            return this.response(products).success()
+        } catch (e) {
+            return this.response().error(e.message)
+        }
+    }
+
+    /**
+     * @param {Object} request
+     * @param response
+     * @return {Object}
+     */
     store = async (request, response) => {
         try {
             const product = new Product(this.#_formatProductData(request.user, request.body))

@@ -13,6 +13,14 @@ class ProductController {
      * @param {Object} response
      * @return {JSON}
      */
+    index = async (request, response) => {
+        return response.json( await this.service.productList( request, response))
+    }
+    /**
+     * @param {Object} request
+     * @param {Object} response
+     * @return {JSON}
+     */
     store = async (request, response) => {
         return response.json( await this.service.store( request, response))
     }

@@ -3,9 +3,8 @@ const mongoose = require("mongoose");
 const productSchema = new mongoose.Schema(
     {
         user_id: {
-            type: mongoose.Schema.Types.ObjectId,
+            type: String,
             required: true,
-            ref: "User",
         },
         name: {
             type: String,
