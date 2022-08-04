@@ -10,4 +10,5 @@ module.exports = (app, express) => {
 
     //api routes
     app.use('/api', require('../../routes/api/auth'))
+    app.use('/api', require('../../routes/api/user'))
 }
