@@ -18,8 +18,22 @@ class ProductService extends Service {
      */
     productList = async (request, response) => {
         try {
-            let products = await Product.find({user_id: request.user.id})
-            return this.response(products).success()
+            let searchStr = {}
+            if(request.query.search.value)
+            {
+                let regex = new RegExp(request.query.search.value, "i")
+                searchStr = { $or: [{'name': regex},{'manufacturer': regex }] };
+            }
+            let recordsTotal = await Product.count({user_id : request.user.id})
+            let recordsFiltered = await Product.count({user_id : request.user.id, ...searchStr})
+            let results = await Product.find({user_id: request.user.id, ...searchStr})
+            let data = {
+                "draw": request.query.draw,
+                "recordsFiltered": recordsFiltered,
+                "recordsTotal": recordsTotal,
+                "data": results
+            };
+            return this.response(data).success()
         } catch (e) {
             return this.response().error(e.message)
         }
