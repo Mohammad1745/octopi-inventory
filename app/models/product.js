@@ -9,8 +9,8 @@ const productSchema = new mongoose.Schema(
         name: {
             type: String,
             required: true,
+            unique: false,
             trim: true,
-            unique: true,
             lowercase: true,
             minlength: 5,
         },
