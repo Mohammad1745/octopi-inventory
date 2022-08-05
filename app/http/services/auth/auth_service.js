@@ -45,7 +45,7 @@ class AuthService extends Service {
             const user = new User(this.#_formatUserData(request.body))
             const userData = await user.save()
 
-            return this.response(userData).success('hi')
+            return this.response(userData).success('Signed Up successfully.')
         } catch (e) {
             return this.response().error(e.message)
         }
