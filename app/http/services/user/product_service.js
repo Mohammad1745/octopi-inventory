@@ -18,17 +18,14 @@ class ProductService extends Service {
      */
     productList = async (request, response) => {
         try {
-            console.log(request.query)
-            let searchStr = {}
-            if(request.query.search.value)
-            {
-                let regex = new RegExp(request.query.search.value, "i")
-                searchStr = { $or: [{'name': regex},{'manufacturer': regex }] };
-            }
-            let paginationQuery = {'skip': Number( request.query.start), 'limit': Number(request.query.length) }
+            let searchStr = this.#_generateSearchString(request.query)
+            let paginationQuery = this.#_generatePaginationQuery(request.query)
+            let sortingQuery = this.#_generateSortingQuery(request.query)
+
             let recordsTotal = await Product.count({user_id : request.user.id})
             let recordsFiltered = await Product.count({user_id : request.user.id, ...searchStr})
-            let results = await Product.find({user_id: request.user.id, ...searchStr},null,paginationQuery)
+            let results = await Product.find({user_id: request.user.id, ...searchStr},null,paginationQuery).sort(sortingQuery)
+
             let data = {
                 "draw": request.query.draw,
                 "recordsFiltered": recordsFiltered,
@@ -55,6 +52,23 @@ class ProductService extends Service {
         } catch (e) {
             return this.response().error(e.message)
         }
+    }
+    #_generateSearchString = (query) => {
+        let searchStr = {}
+        if(query.search.value)
+        {
+            let regex = new RegExp(query.search.value, "i")
+            searchStr = { $or: [{'name': regex},{'manufacturer': regex }] };
+        }
+        return searchStr
+    }
+    #_generatePaginationQuery = (query) => {
+        return {'skip': Number( query.start), 'limit': Number(query.length) }
+    }
+    #_generateSortingQuery = (query) => {
+        let sortingQuery = {}
+        sortingQuery[query.columns[Number( query.order[0].column)].data] = query.order[0].dir === 'desc' ?  -1 : 1
+        return sortingQuery
     }
     #_formatProductData = (user, data) => {
         return data ?
